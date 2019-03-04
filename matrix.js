@@ -2,6 +2,11 @@ const fs = require('fs')
 var lineMaker = require('./line')
 var spawn = require('child_process').execSync
 class Matrix {
+    /**
+     * Creates a Matrix using the given sizes.
+     * @param {Number} size_x number of rows in Matrix. Defaults to 4
+     * @param {Number} size_y number of columns in Matrix Defaults to 4
+     */
     constructor(size_x, size_y) {
         if (!(Number.isInteger(size_x) || Number.isInteger(size_y))) {
             throw new Error("sizes must be integers")
@@ -29,6 +34,10 @@ class Matrix {
         }
     }
 
+    /**
+     * Creates a string representation of the Matrix
+     * @returns {String} a string
+     */
     toString() {
         var arr = this.arr
         var str = ""
@@ -43,6 +52,14 @@ class Matrix {
         return str
     }
 
+    /**
+     * Adds the point (x,y,z) to the Matrix
+     * @param {Number} point_x an integer value for the x-coordinate of a point
+     * @param {Number} point_y an integer value for the y-coordinate of a point
+     * @param {Number} point_z an integer value for the z-coordinate of a point
+     * @returns true if success
+     * @throws Error if not enough space in Matrix
+     */
     addPoint(point_x, point_y, point_z) {
         var arr = this.arr
         for (var i = 0; i < arr[0].length; i++) {
@@ -59,6 +76,16 @@ class Matrix {
         throw new Error("Not enough space in matrix")
     }
 
+    /**
+     * Adds an edge to the matrix
+     * @param {Number} x1 x-coor of first point
+     * @param {Number} y1 y-coor of first point
+     * @param {Number} z1 z-coor of first point
+     * @param {Number} x2 x-coor of second point
+     * @param {Number} y2 y-coor of second point
+     * @param {Number} z2 z-coor of second point
+     * @returns `true` if success, `false` if fail 
+     */
     addEdge(x1, y1, z1, x2, y2, z2) {
         try {
             this.addPoint(x1, y1, z1)
@@ -71,6 +98,14 @@ class Matrix {
         }
         
     }
+
+    /**
+     * Multiplies this instance of a Matrix with another Matrix
+     * @param {Matrix} second the second Matrix to multiply with
+     * @throws Error if `second` is not an instance of `Matrix` or row count of `second` is
+     * not the same as this instance
+     * @returns a copy of the multiplied Matrix
+     */
     multiplyMatrix(second) {
         if (!(second instanceof Matrix)) {
             throw new Error("second object not a matrix")
@@ -92,6 +127,11 @@ class Matrix {
         return retMatrix
     }
 
+    /**
+     * Sets the first instance of NaN to `number`
+     * @param {Number} number a number to replace NaN with
+     * @returns `true` if replacement is successful, `false` otherwise
+     */
     setFirstNaN(number) {
         for (var a = 0; a < this.rows; a++) {
             for (var b = 0; b < this.cols; b++) {
@@ -104,6 +144,10 @@ class Matrix {
         return false
     }
 
+    /**
+     * Creates an identity Matrix from current Matrix
+     * @returns the identity Matrix
+     */
     identityMatrix() {
         var b = (this.rows > this.cols) ? this.rows : this.cols
         var retMat = new Matrix(b, b)
@@ -119,6 +163,14 @@ class Matrix {
         return retMat
     }
 
+    /**
+     * Dilates the Matrix by the given values
+     * @param {Number} a number to dilate x-coors by
+     * @param {Number} b number to dilate y-coors by
+     * @param {Number} c number to dilate z-coors by
+     * @throws Error if `a` is undefined
+     * @returns the dilated Matrix
+     */
     dilate(a, b, c) {
         var idenMod = this.identityMatrix()
         if (a == undefined) {
@@ -144,6 +196,14 @@ class Matrix {
         return nMod
     }
 
+    /**
+     * Translates the Matrix by the given values
+     * @param {Number} a number to translate x-coors by
+     * @param {Number} b number to translate y-coors by
+     * @param {Number} c number to translate z-coors by
+     * @throws Error if `a` is undefined
+     * @returns the translated Matrix
+     */
     translate(a, b, c) {
         var idenMod = this.identityMatrix()
         if (a == undefined) {
@@ -158,6 +218,13 @@ class Matrix {
         return nMod
     }
 
+    /**
+     * Rotates the Matrix based on the given values
+     * @param {Number} degree the degree of rotation
+     * @param {String} axis the axis to rotate on. Can be `x`, `y`, or `z`
+     * @throws Error if `degree` is not a number, or if `axis` is not `x`, `y`, or `z`
+     * @returns the rotated Matrix
+     */
     rotate(degree, axis) {
         if (isNaN(degree)) {
             throw new Error(`Degree is not a number. Given ${degree}`)
