@@ -1,7 +1,6 @@
 run: install line.js
 	@echo "Running matrix file"
 	@node matrix.js
-	@convert image.ppm pic.png
 	@echo "Image data file converted, check image"
 
 check:
